@@ -1,0 +1,49 @@
+services:
+  # Django web service
+  - type: web
+    name: legaldoctracker-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 90
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: .onrender.com
+      - key: DB_HOST
+        fromDatabase:
+          name: legaldoctracker-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: legaldoctracker-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: legaldoctracker-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: legaldoctracker-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: legaldoctracker-db
+          property: password
+      - key: MONGO_URI
+        sync: false   # Set manually in Render dashboard (MongoDB Atlas URI)
+      - key: MONGO_DB_NAME
+        value: legaldoctracker
+      - key: SECURE_SSL_REDIRECT
+        value: "False"  # Render handles SSL termination at the load balancer
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://your-frontend.com
+
+  # PostgreSQL database (free tier)
+databases:
+  - name: legaldoctracker-db
+    databaseName: legaldoctracker
+    user: legaldoctracker_user
+    plan: free
