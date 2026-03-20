@@ -18,6 +18,8 @@ class PartySerializer(serializers.ModelSerializer):
     """Serializer for Party model."""
 
     class Meta:
+        """PartySerializer metadata."""
+
         model = Party
         fields = ["id", "name", "email", "role", "created_at"]
         read_only_fields = ["id", "created_at"]
@@ -27,19 +29,19 @@ class ContractEventSerializer(serializers.ModelSerializer):
     """Serializer for ContractEvent model."""
 
     class Meta:
+        """ContractEventSerializer metadata."""
+
         model = ContractEvent
         fields = ["id", "contract", "event_type", "timestamp", "notes"]
         read_only_fields = ["id", "timestamp"]
 
 
 class ContractCreateSerializer(serializers.ModelSerializer):
-    """
-    Serializer for creating a new contract.
-
-    The `owner` field is set automatically from the authenticated user.
-    """
+    """Serialize contract creation; owner is set from the authenticated user."""
 
     class Meta:
+        """ContractCreateSerializer metadata."""
+
         model = Contract
         fields = [
             "id",
@@ -67,15 +69,15 @@ class ContractCreateSerializer(serializers.ModelSerializer):
 
 
 class ContractDetailSerializer(serializers.ModelSerializer):
-    """
-    Full contract detail serializer including clause count from MongoDB.
-    """
+    """Full contract detail serializer including clause count from MongoDB."""
 
     owner_username = serializers.SerializerMethodField()
     clause_count = serializers.IntegerField(read_only=True, default=0)
     is_expired = serializers.BooleanField(read_only=True)
 
     class Meta:
+        """ContractDetailSerializer metadata."""
+
         model = Contract
         fields = [
             "id",
@@ -98,14 +100,14 @@ class ContractDetailSerializer(serializers.ModelSerializer):
 
 
 class ContractListSerializer(serializers.ModelSerializer):
-    """
-    Lightweight serializer for list views.
-    """
+    """Lightweight serializer for list views."""
 
     owner_username = serializers.SerializerMethodField()
     is_expired = serializers.BooleanField(read_only=True)
 
     class Meta:
+        """ContractListSerializer metadata."""
+
         model = Contract
         fields = [
             "id",

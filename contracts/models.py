@@ -65,6 +65,8 @@ class Contract(models.Model):
     )
 
     class Meta:
+        """Contract model metadata."""
+
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["status", "expires_at"]),
@@ -73,6 +75,7 @@ class Contract(models.Model):
         verbose_name_plural = "Contracts"
 
     def __str__(self) -> str:
+        """Return string representation of the contract."""
         return f"[{self.status}] {self.title}"
 
     @property
@@ -84,9 +87,7 @@ class Contract(models.Model):
 
 
 class Party(models.Model):
-    """
-    Represents an individual or organisation that participates in contracts.
-    """
+    """Represent an individual or organisation that participates in contracts."""
 
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -98,11 +99,14 @@ class Party(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        """Party model metadata."""
+
         ordering = ["name"]
         verbose_name = "Party"
         verbose_name_plural = "Parties"
 
     def __str__(self) -> str:
+        """Return string representation of the party."""
         return f"{self.name} ({self.role})"
 
 
@@ -140,9 +144,12 @@ class ContractEvent(models.Model):
     notes = models.TextField(blank=True, default="")
 
     class Meta:
+        """ContractEvent model metadata."""
+
         ordering = ["-timestamp"]
         verbose_name = "Contract Event"
         verbose_name_plural = "Contract Events"
 
     def __str__(self) -> str:
+        """Return string representation of the event."""
         return f"{self.event_type} @ {self.timestamp:%Y-%m-%d %H:%M} on Contract #{self.contract_id}"

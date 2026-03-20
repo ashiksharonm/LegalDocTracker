@@ -20,7 +20,6 @@ Test suite for LegalDocTracker — 17 tests covering:
 17. Clause endpoint returns 404 for missing contract
 """
 import pytest
-from django.urls import reverse
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework import status

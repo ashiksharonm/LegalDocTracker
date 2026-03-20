@@ -8,12 +8,11 @@ from typing import Any
 
 from django.utils.dateparse import parse_datetime
 from rest_framework import status as http_status
+from rest_framework import exceptions as drf_exceptions
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import APIException
-from rest_framework import exceptions as drf_exceptions
 
 from mongo_store.clause_store import ClauseStore
 
@@ -45,14 +44,11 @@ logger = logging.getLogger(__name__)
 
 def custom_exception_handler(exc: Exception, context: dict) -> Response | None:
     """
-    Custom DRF exception handler that adds a `status` field to all errors.
+    Add a ``status`` field to all DRF error responses.
 
-    Returns a Response with a consistent error structure:
-    {
-        "status": "error",
-        "detail": "...",
-        "errors": {...}   # only for validation errors
-    }
+    Returns a Response with a consistent error structure::
+
+        {"status": "error", "detail": "...", "errors": {...}}
     """
     from rest_framework.views import exception_handler
 
@@ -89,14 +85,14 @@ def _get_contract_or_404(contract_id: int) -> Contract:
 
 
 class ContractListCreateView(APIView):
-    """
+    """Handle contract listing and creation.
+
     GET  /api/contracts/  — list contracts with optional filters.
     POST /api/contracts/  — create a new contract.
     """
 
     def get(self, request: Request) -> Response:
-        """
-        List contracts.
+        """List contracts with optional query-param filters.
 
         Query params:
             status         — filter by status string
@@ -147,8 +143,9 @@ class ContractListCreateView(APIView):
 
 
 class ContractDetailView(APIView):
-    """
-    GET /api/contracts/{id}/ — retrieve a single contract with clause count.
+    """Retrieve a single contract with clause count.
+
+    GET /api/contracts/{id}/
     """
 
     def get(self, request: Request, contract_id: int) -> Response:
@@ -168,8 +165,9 @@ class ContractDetailView(APIView):
 
 
 class ContractStatusUpdateView(APIView):
-    """
-    PATCH /api/contracts/{id}/status/ — update contract status with validation.
+    """Update contract status with transition validation.
+
+    PATCH /api/contracts/{id}/status/
     """
 
     def patch(self, request: Request, contract_id: int) -> Response:
@@ -206,8 +204,9 @@ class ContractStatusUpdateView(APIView):
 
 
 class ContractExpiringSoonView(APIView):
-    """
-    GET /api/contracts/expiring-soon/ — contracts expiring within 7 days.
+    """Return contracts expiring within 7 days.
+
+    GET /api/contracts/expiring-soon/
     """
 
     def get(self, request: Request) -> Response:
@@ -223,9 +222,10 @@ class ContractExpiringSoonView(APIView):
 
 
 class ContractClauseView(APIView):
-    """
-    POST /api/contracts/{id}/clauses/ — add a clause document to MongoDB.
-    GET  /api/contracts/{id}/clauses/ — retrieve all clauses for a contract.
+    """Manage clause documents stored in MongoDB.
+
+    POST /api/contracts/{id}/clauses/ — add a clause document.
+    GET  /api/contracts/{id}/clauses/ — retrieve all clauses.
     """
 
     def _get_contract_or_404(self, contract_id: int) -> Contract:
@@ -236,15 +236,10 @@ class ContractClauseView(APIView):
             raise NotFound(detail=f"Contract {contract_id} not found.")
 
     def post(self, request: Request, contract_id: int) -> Response:
-        """
-        Add a clause document to MongoDB for the given contract.
+        """Insert a clause document into MongoDB for the given contract.
 
-        Body: {
-            "clause_number": 1,
-            "clause_text": "...",
-            "clause_type": "INDEMNITY",
-            "flagged_keywords": ["liability"]
-        }
+        Body: {"clause_number": 1, "clause_text": "...",
+               "clause_type": "INDEMNITY", "flagged_keywords": []}
         """
         contract = self._get_contract_or_404(contract_id)
 

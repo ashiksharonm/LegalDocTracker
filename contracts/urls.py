@@ -1,6 +1,4 @@
-"""
-URL routing for the contracts application.
-"""
+"""URL routing for the contracts application."""
 from django.urls import path
 
 from .views import (

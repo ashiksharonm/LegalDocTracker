@@ -1,6 +1,4 @@
-"""
-WSGI config for LegalDocTracker project.
-"""
+"""WSGI config for LegalDocTracker project."""
 import os
 
 from django.core.wsgi import get_wsgi_application

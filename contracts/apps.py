@@ -1,6 +1,4 @@
-"""
-AppConfig for the contracts application.
-"""
+"""AppConfig for the contracts application."""
 from django.apps import AppConfig
 
 

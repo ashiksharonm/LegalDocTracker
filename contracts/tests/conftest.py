@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from datetime import timedelta
 
-from contracts.models import Contract, Party, ContractEvent, ContractStatus, PartyRole
+from contracts.models import Contract, Party, ContractStatus, PartyRole
 
 User = get_user_model()
 
