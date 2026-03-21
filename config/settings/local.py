@@ -13,12 +13,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-# ---------------------------------------------------------------------------
-# Developer conveniences
-# ---------------------------------------------------------------------------
-
-INSTALLED_APPS += ["django.contrib.staticfiles"]  # noqa: F405
-
 # Allow the DRF browsable API renderer in local dev
 REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = (  # noqa: F405
     "rest_framework.renderers.JSONRenderer",
