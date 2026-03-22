@@ -146,7 +146,9 @@ def test_list_contracts_filter_by_status(auth_client, contract, signed_contract)
 @pytest.mark.django_db
 def test_list_contracts_filter_expires_before(auth_client, expiring_contract, contract):
     """List endpoint should filter by expires_before datetime."""
-    cutoff = (timezone.now() + timedelta(days=5)).isoformat()
+    # Use strftime with explicit 'Z' (UTC) — avoids the '+' sign that gets
+    # decoded as a space in query strings, breaking parse_datetime → 400.
+    cutoff = (timezone.now() + timedelta(days=5)).strftime("%Y-%m-%dT%H:%M:%SZ")
     response = auth_client.get(f"/api/contracts/?expires_before={cutoff}")
     assert response.status_code == status.HTTP_200_OK
 

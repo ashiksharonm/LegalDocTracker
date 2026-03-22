@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 from .models import Contract, ContractStatus, ContractEvent, ContractEventType
+from mongo_store.clause_store import ClauseStore
 
 logger = logging.getLogger(__name__)
 
@@ -98,8 +99,6 @@ def get_contract_with_clause_count(contract_id: int) -> Contract:
     Raises:
         ContractNotFoundError: If no contract with the given ID exists.
     """
-    from mongo_store.clause_store import ClauseStore
-
     try:
         contract = Contract.objects.select_related("owner").get(pk=contract_id)
     except Contract.DoesNotExist as exc:
