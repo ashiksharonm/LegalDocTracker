@@ -166,7 +166,10 @@ def test_list_contracts_filter_expires_before(auth_client, expiring_contract, co
 def test_contract_detail_with_clause_count(auth_client, contract, mock_clause_store):
     """Detail endpoint should return the contract and its clause count."""
     mock_store, storage = mock_clause_store
-    mock_store.count_clauses.return_value = 3
+
+    # Populate the in-memory store with 3 dummy clauses so count_clauses returns 3
+    # (setting .return_value fails because the fixture sets a .side_effect)
+    storage[contract.id] = [{}, {}, {}]
 
     response = auth_client.get(f"/api/contracts/{contract.id}/")
     assert response.status_code == status.HTTP_200_OK
