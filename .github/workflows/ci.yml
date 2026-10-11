@@ -105,6 +105,7 @@ jobs:
           pytest contracts/tests/ \
             -v \
             --tb=short \
+            --cov --cov-report=term \
             --junit-xml=test-results.xml
 
       - name: Upload test results

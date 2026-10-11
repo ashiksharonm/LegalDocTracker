@@ -1,8 +1,9 @@
 """
-MongoDB client singleton for LegalDocTracker.
+MongoDB client access for LegalDocTracker.
 
 Uses PyMongo and reads connection settings from Django settings.
-The client is initialised once at module import time.
+The MongoClient is created lazily on first use and cached with
+``functools.lru_cache``; connection pooling is handled by PyMongo itself.
 """
 import logging
 from functools import lru_cache
@@ -18,10 +19,11 @@ def get_mongo_client() -> pymongo.MongoClient:
     """
     Return a cached PyMongo MongoClient.
 
-    The client is thread-safe and reused across requests.
+    MongoClient is thread-safe and maintains its own connection pool, so a
+    single cached instance is shared across requests.
 
     Returns:
-        A connected MongoClient instance.
+        A MongoClient instance (connects lazily).
     """
     uri = getattr(settings, "MONGO_URI", "mongodb://localhost:27017")
     client: pymongo.MongoClient = pymongo.MongoClient(

@@ -190,16 +190,19 @@ def transition_status(
     Raises:
         ContractStatusError: If the transition is not permitted.
     """
-    current = contract.status
-    allowed = ALLOWED_TRANSITIONS.get(current, [])
-
-    if new_status not in allowed:
-        raise ContractStatusError(
-            f"Transition from '{current}' to '{new_status}' is not allowed. "
-            f"Permitted transitions: {allowed or 'none (terminal state)'}."
-        )
-
     with transaction.atomic():
+        # Lock the row so concurrent transitions cannot both pass validation
+        # against the same stale status.
+        locked = Contract.objects.select_for_update().get(pk=contract.pk)
+        current = locked.status
+        allowed = ALLOWED_TRANSITIONS.get(current, [])
+
+        if new_status not in allowed:
+            raise ContractStatusError(
+                f"Transition from '{current}' to '{new_status}' is not allowed. "
+                f"Permitted transitions: {allowed or 'none (terminal state)'}."
+            )
+
         contract.status = new_status
         contract.save(update_fields=["status", "updated_at"])
 
