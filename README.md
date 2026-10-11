@@ -203,11 +203,13 @@ curl -X POST http://localhost:8000/api/contracts/1/clauses/ \
 pytest contracts/tests/ -v
 
 # With coverage
-pytest contracts/tests/ -v --cov=contracts --cov-report=html
+pytest contracts/tests/ -v --cov --cov-report=term-missing
 
 # Skip slow tests
 pytest contracts/tests/ -v -m "not slow"
 ```
+
+Measured line coverage (pytest-cov, `.coveragerc` excludes tests and migrations): **86%** across `contracts` and `mongo_store` (18 tests, MongoDB mocked, so `mongo_store/clause_store.py` is only 32% covered).
 
 ---
 
@@ -231,9 +233,9 @@ LegalDocTracker/
 │   ├── urls.py              # App URL routes
 │   └── tests/
 │       ├── conftest.py      # Fixtures (users, clients, MongoDB mock)
-│       └── test_contracts.py # 17 pytest tests
+│       └── test_contracts.py # 18 pytest tests
 ├── mongo_store/
-│   ├── client.py            # Singleton PyMongo client (LRU cached)
+│   ├── client.py            # lru_cache-wrapped MongoClient (PyMongo pools connections)
 │   └── clause_store.py      # Clause document CRUD + index management
 ├── docker-compose.yml       # PostgreSQL + MongoDB + Django services
 ├── Dockerfile               # Multi-stage build (builder + runtime)

@@ -252,6 +252,18 @@ def test_status_transition_signed_to_draft_forbidden(auth_client, signed_contrac
     assert "status" in response.data.get("errors", {}) or "error" in str(response.data)
 
 
+@pytest.mark.django_db
+def test_transition_validates_against_locked_db_state(contract):
+    """A stale in-memory instance must not bypass validation (row is locked and re-read)."""
+    from contracts.services import ContractStatusError, transition_status
+
+    stale = Contract.objects.get(pk=contract.pk)
+    Contract.objects.filter(pk=contract.pk).update(status=ContractStatus.SIGNED)
+    # stale still says DRAFT; DRAFT -> REVIEW would be legal on stale data
+    with pytest.raises(ContractStatusError):
+        transition_status(contract=stale, new_status=ContractStatus.REVIEW)
+
+
 # ===========================================================================
 # 13. Status transition: EXPIRED is a terminal state
 # ===========================================================================

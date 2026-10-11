@@ -1,0 +1,5 @@
+[run]
+source = contracts, mongo_store
+omit =
+    */tests/*
+    */migrations/*
